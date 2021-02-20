@@ -1,0 +1,31 @@
+{
+  "name": "avepha-platform",
+  "version": "1.0.0",
+  "description": "Serverless webpack example using Typescript",
+  "main": "handler.js",
+  "scripts": {
+    "dev": "sls offline start --stage local --region ap-southeast-1"
+  },
+  "dependencies": {
+    "sharp": "^0.23.4"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.829.0",
+    "@serverless/typescript": "^2.12.0",
+    "@types/aws-lambda": "^8.10.64",
+    "@types/node": "^14.14.6",
+    "fork-ts-checker-webpack-plugin": "^6.0.0",
+    "serverless": "^2.19.0",
+    "serverless-dotenv-plugin": "^3.1.0",
+    "serverless-offline": "^6.8.0",
+    "serverless-pseudo-parameters": "^2.5.0",
+    "serverless-webpack": "^5.2.0",
+    "ts-loader": "^8.0.14",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.5",
+    "webpack": "^5.4.0",
+    "webpack-node-externals": "^2.5.2"
+  },
+  "author": "The serverless webpack authors (https://github.com/elastic-coders/serverless-webpack)",
+  "license": "MIT"
+}

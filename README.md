@@ -1,0 +1,1 @@
+# OTA image resizing
