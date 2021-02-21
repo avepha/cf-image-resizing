@@ -5,7 +5,8 @@
   "main": "handler.js",
   "scripts": {
     "dev": "sls offline start --stage local --region ap-southeast-1",
-    "test": "jest test/handlers.spec.ts --colors --runInBand"
+    "test": "jest test/handlers.spec.ts --colors --runInBand",
+    "deploy": "serverless deploy --stage dev --region ap-souteast-1"
   },
   "dependencies": {
     "sharp": "^0.23.4"
