@@ -41,7 +41,7 @@ const serverlessConfiguration: AWS & { stepFunctions?: any } = {
   functions: {
     originResponse: {
       name: 'originResponse',
-      handler: 'src/handlers.handler',
+      handler: 'src/handlers.originResponse',
       events: [{http: {path: '/origin-response', method: 'get'}}],
     },
   },
