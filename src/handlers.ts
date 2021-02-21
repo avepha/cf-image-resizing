@@ -1,10 +1,6 @@
-import AWS from 'aws-sdk'
-import sharp from 'sharp'
-import { PassThrough } from 'stream'
+import s3 from './s3'
 import { CloudFrontResponseHandler } from 'aws-lambda'
-import { extractUri, getBucketFromDomainName } from './lib'
-
-const s3 = new AWS.S3()
+import { extractUri, getBucketFromDomainName, resizeAndUpdateToS3 } from './lib'
 
 export const originResponse: CloudFrontResponseHandler = async (event) => {
   const requestOrigin = event.Records[0].cf.request.origin
@@ -28,33 +24,27 @@ export const originResponse: CloudFrontResponseHandler = async (event) => {
   // /photos/image_800x700.jpg
   const { name, width, height, ext, fit } = extractUri(requestUri)
   const originKey = `photos/${name}.${ext}`
-  const tartgetKey = `photos/${name}_${width}x${height}x${fit}.${ext}`
+  const targetKey = `photos/${name}_${width}x${height}x${fit}.${ext}`
 
-  // console.log({ bucket, name, width, height, ext, fit, originKey, tartgetKey })
-  // const outputStream = fs.createWriteStream('/Users/alfarie/Documents/GitHub/serverless-cf-image/test.jpg')
+  const objectStream = await s3.getObject({ Bucket: bucket, Key: originKey }).createReadStream()
 
-  const readableStream = await s3.getObject({ Bucket: bucket, Key: originKey }).createReadStream()
-  const writeableStream = new PassThrough()
-
-  await new Promise((resolve) => {
-    s3.upload({
-      Bucket: bucket,
-      Key: tartgetKey,
-      Body: writeableStream
-    }, (err) => {
-      if(err) {
-        throw err
-      }
-
-      resolve(null)
-    })
-
-    const sharpPipeline = sharp()
-    sharpPipeline.resize(width, height, { fit, withoutEnlargement: true })
-      .toFormat('jpeg').pipe(writeableStream)
-
-    readableStream.pipe(sharpPipeline)
+  const base64Image = await resizeAndUpdateToS3({
+    objectStream,
+    targetKey,
+    bucket,
+    resizeOptions: {
+      fit,
+      width,
+      height
+    }
   })
 
-  return null
+  return {
+    status: '200',
+    body: base64Image,
+    bodyEncoding: 'base64',
+    headers: {
+      'content-type': [{ key: 'Content-Type', value: 'image/jpeg' }]
+    }
+  }
 }

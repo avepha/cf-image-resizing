@@ -6,8 +6,11 @@ module.exports = {
   testTimeout: 10000,
   globals: {
     'ts-jest': {
-      isolatedModules: true,
-    },
+      isolatedModules: true
+    }
   },
   testRegex: '\\.spec\\.ts$',
+  moduleNameMapper: {
+    'src/(.*)': '<rootDir>/src/$1'
+  }
 }
