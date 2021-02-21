@@ -1,20 +1,15 @@
-import { AWS } from '@serverless/typescript'
+import AWS from 'serverless/aws'
 
-const serverlessConfiguration: AWS & { stepFunctions?: any } = {
+const serverlessConfiguration: AWS.Serverless = {
   service: 'serverless-cf-image',
   frameworkVersion: '2',
-  configValidationMode: 'error',
+  configValidationMode: 'off', // err
   custom: {
     dev: 'default',
     webpack: {
       webpackConfig: './webpack.config.js',
-      includeModules: true,
       forceInclude: ['sharp'],
-      packagerOptions: {
-        scripts: [
-          'npm rebuild sharp --target=12.20.2 --target_arch=x64 --target_platform=linux'
-        ]
-      }
+      includeModules: true
     }
   },
   plugins: [
@@ -31,9 +26,6 @@ const serverlessConfiguration: AWS & { stepFunctions?: any } = {
     apiGateway: {
       minimumCompressionSize: 1024
     },
-    environment: {
-      AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1'
-    },
     iamRoleStatements: [
       {
         Effect: 'Allow',
@@ -49,30 +41,74 @@ const serverlessConfiguration: AWS & { stepFunctions?: any } = {
           'arn:aws:s3:::demo-cf-image-resize/*'
         ]
       }
-      // {
-      //   Effect: 'Allow',
-      //   Principal: {
-      //     Service: [
-      //       'lambda.amazonaws.com',
-      //       'edgelambda.amazonaws.com'
-      //     ]
-      //   },
-      //   Action: 'sts:AssumeRole'
-      // }
     ]
   },
   functions: {
     originResponse: {
       name: 'originResponse',
       handler: 'src/handlers.originResponse',
-      events: [
-        { http: { path: '/origin-response', method: 'get' } },
-        {cloudFront: {
-          eventType: 'origin-response',
-
-          }}
-      ]
+      role: 'ImageResizingRole'
+    }
+  },
+  resources: {
+    Resources: {
+      ImageResizingRole: {
+        Type: 'AWS::IAM::Role',
+        Properties: {
+          Path: '/imageresizingrole/',
+          RoleName: 'image-resizing-role',
+          AssumeRolePolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Effect: 'Allow',
+                Principal: {
+                  Service: [
+                    'lambda.amazonaws.com',
+                    'edgelambda.amazonaws.com'
+                  ]
+                },
+                Action: 'sts:AssumeRole'
+              }
+            ]
+          },
+          Policies: [
+            {
+              PolicyName: 'myPolicyName',
+              PolicyDocument: {
+                Version: '2012-10-17',
+                Statement: [
+                  {
+                    Effect: 'Allow',
+                    Action: ['lambda:InvokeFunction'],
+                    Resource: [
+                      'arn:aws:lambda:*:*:function:originResponse'
+                    ]
+                  },
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "logs:CreateLogGroup",
+                      "logs:CreateLogStream",
+                      "logs:PutLogEvents"
+                    ],
+                    "Resource": "*"
+                  },
+                  {
+                    Effect: 'Allow',
+                    Action: ['s3:PutObject', 's3:GetObject'],
+                    Resource: [
+                      'arn:aws:s3:::demo-cf-image-resize/*'
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
     }
   }
+
 }
 module.exports = serverlessConfiguration
