@@ -2,7 +2,6 @@ module.exports = {
   rootDir: './',
   preset: 'ts-jest',
   testEnvironment: 'node',
-
   testTimeout: 10000,
   globals: {
     'ts-jest': {

@@ -11,3 +11,4 @@ jspm_packages
 .vscode
 package-lock.json
 /yarn-error.log
+build

@@ -4,44 +4,15 @@ const serverlessConfiguration: AWS.Serverless = {
   service: 'serverless-cf-image',
   frameworkVersion: '2',
   configValidationMode: 'off', // err
-  custom: {
-    dev: 'default',
-    webpack: {
-      webpackConfig: './webpack.config.js',
-      forceInclude: ['sharp'],
-      includeModules: true
-    }
-  },
   plugins: [
     'serverless-dotenv-plugin',
     'serverless-pseudo-parameters',
-    'serverless-webpack',
-    'serverless-offline'
   ],
   provider: {
     name: 'aws',
     runtime: 'nodejs12.x',
     region: 'ap-southeast-1',
     stage: 'dev',
-    apiGateway: {
-      minimumCompressionSize: 1024
-    },
-    iamRoleStatements: [
-      {
-        Effect: 'Allow',
-        Action: ['lambda:InvokeFunction'],
-        Resource: [
-          'arn:aws:lambda:*:*:function:originResponse'
-        ]
-      },
-      {
-        Effect: 'Allow',
-        Action: ['s3:PutObject', 's3:GetObject'],
-        Resource: [
-          'arn:aws:s3:::demo-cf-image-resize/*'
-        ]
-      }
-    ]
   },
   functions: {
     originResponse: {
@@ -79,20 +50,22 @@ const serverlessConfiguration: AWS.Serverless = {
                 Version: '2012-10-17',
                 Statement: [
                   {
+                    'Action': [
+                      'logs:CreateLogStream',
+                      'logs:CreateLogGroup',
+                      'logs:PutLogEvents'
+                    ],
+                    'Resource': [
+                      'arn:aws:logs:*:*:log-group:/aws/lambda/*'
+                    ],
+                    'Effect': 'Allow'
+                  },
+                  {
                     Effect: 'Allow',
                     Action: ['lambda:InvokeFunction'],
                     Resource: [
                       'arn:aws:lambda:*:*:function:originResponse'
                     ]
-                  },
-                  {
-                    "Effect": "Allow",
-                    "Action": [
-                      "logs:CreateLogGroup",
-                      "logs:CreateLogStream",
-                      "logs:PutLogEvents"
-                    ],
-                    "Resource": "*"
                   },
                   {
                     Effect: 'Allow',
@@ -109,6 +82,6 @@ const serverlessConfiguration: AWS.Serverless = {
       }
     }
   }
-
 }
+
 module.exports = serverlessConfiguration

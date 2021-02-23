@@ -4,12 +4,9 @@
   "description": "Serverless webpack example using Typescript",
   "main": "handler.js",
   "scripts": {
-    "dev:clear": "rm -rf node_modules/sharp && yarn add sharp",
-    "dev": "sls offline start --stage local --region ap-southeast-1",
     "test": "jest test/handlers.spec.ts --colors --runInBand",
-    "docker:lambda-ci": "docker run -it --rm -v \"$PWD\":/app -v ~/.aws/credentials:/root/.aws/credentials -w /app lambda-ci",
-    "build:lambda": "rm -rf node_modules && yarn docker:lambda-ci yarn install",
-    "deploy": "yarn build:lambda && yarn docker:lambda-ci serverless deploy --stage dev --region us-east-1"
+    "build": "tsc && cp serverless.yml package.json ./build",
+    "deploy": "yarn build"
   },
   "dependencies": {
     "sharp": "0.27.1"
@@ -21,20 +18,14 @@
     "@types/serverless": "1.78.20",
     "@types/sharp": "0.27.1",
     "aws-sdk": "2.829.0",
-    "fork-ts-checker-webpack-plugin": "6.0.0",
     "jest": "26.6.3",
     "jest-raw-loader": "1.0.1",
     "serverless": "2.19.0",
-    "serverless-dotenv-plugin": "3.1.0",
-    "serverless-offline": "6.8.0",
     "serverless-pseudo-parameters": "2.5.0",
-    "serverless-webpack": "5.3.5",
     "ts-jest": "26.4.4",
     "ts-loader": "8.0.14",
     "ts-node": "9.0.0",
-    "typescript": "4.0.5",
-    "webpack": "5.4.0",
-    "webpack-node-externals": "2.5.2"
+    "typescript": "4.0.5"
   },
   "author": "The serverless webpack authors (https://github.com/elastic-coders/serverless-webpack)",
   "license": "MIT"
