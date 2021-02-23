@@ -9,7 +9,7 @@ export const cfResponse = {
             "s3": {
               "authMethod": "none",
               "customHeaders": {},
-              "domainName": "demo-cf-image-resize.s3-ap-southeast-1.amazonaws.com",
+              "domainName": "demo-cf-image-resize.s3.amazonaws.com",
               "path": "",
               "region": "ap-souteast-1"
             }

@@ -5,6 +5,7 @@
     "lib": [
       "es2017"
     ],
+    "resolveJsonModule": true,
     "removeComments": true,
     "moduleResolution": "node",
     "noUnusedLocals": true,

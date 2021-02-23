@@ -1,8 +1,11 @@
 import s3 from './s3'
 import { CloudFrontResponseHandler } from 'aws-lambda'
 import { extractUri, getBucketFromDomainName, resizeAndUpdateToS3 } from './lib'
+import pkg from '../package.json'
 
 export const originResponse: CloudFrontResponseHandler = async (event) => {
+  console.log(pkg.version)
+  console.log(JSON.stringify(event, null, 2))
   const requestOrigin = event.Records[0].cf.request.origin
   const requestUri = event.Records[0].cf.request.uri
   const response = event.Records[0].cf.response
@@ -38,6 +41,8 @@ export const originResponse: CloudFrontResponseHandler = async (event) => {
       height
     }
   })
+
+  console.log(base64Image)
 
   return {
     status: '200',

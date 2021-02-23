@@ -4,7 +4,7 @@ import sharp from 'sharp'
 
 
 export function getBucketFromDomainName(domainName): string | undefined {
-  const matches = /(.+)\.s3-ap-southeast-1\.amazonaws\.com/.exec(domainName)
+  const matches = /(.+)\.s3\.amazonaws\.com/.exec(domainName)
   return matches !== null
     ? matches[1]
     : undefined
