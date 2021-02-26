@@ -5,13 +5,16 @@
   "main": "handler.js",
   "scripts": {
     "test": "jest test/handlers.spec.ts --colors --runInBand",
-    "build": "tsc && cp serverless.yml package.json ./build",
-    "deploy": "yarn build"
+    "build:package": "node_modules/node-jq/bin/jq '{ name, main, version, dependencies }' < ./package.json > build/package.json",
+    "build": "tsc && yarn build:package && cp serverless.yml ./build",
+    "deploy": "yarn build && docker-compose up"
   },
   "dependencies": {
+    "@silvermine/serverless-plugin-cloudfront-lambda-edge": "2.1.1",
     "sharp": "0.27.1"
   },
   "devDependencies": {
+    "node-jq": "1.12.0",
     "@types/aws-lambda": "8.10.64",
     "@types/jest": "26.0.15",
     "@types/node": "14.14.6",

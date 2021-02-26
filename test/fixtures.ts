@@ -1,5 +1,6 @@
-
+const bucket = "demo-cf-image-resize"
 const url = "/photos/cat-image_500x300xcover.jpg"
+
 export const cfResponse = {
   "Records": [
     {
@@ -9,7 +10,7 @@ export const cfResponse = {
             "s3": {
               "authMethod": "none",
               "customHeaders": {},
-              "domainName": "demo-cf-image-resize.s3.amazonaws.com",
+              "domainName": `${bucket}.s3.amazonaws.com`,
               "path": "",
               "region": "ap-souteast-1"
             }

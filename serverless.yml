@@ -1,6 +1,8 @@
 service: cf-image-resizing
 frameworkVersion: '2'
 configValidationMode: 'off'
+plugins:
+  - '@silvermine/serverless-plugin-cloudfront-lambda-edge'
 provider:
   stage: dev
   region: ap-southeast-1
@@ -30,43 +32,7 @@ functions:
   ResizeImage:
     name: resizeImage
     handler: src/handlers.originResponse
-#    role: ImageResizingRole
-#resources:
-#  Resources:
-#    ImageResizingRole:
-#      Type: AWS::IAM::Role
-#      Properties:
-#        Path: /imageresizingrole/
-#        RoleName: image-resizing-role
-#        AssumeRolePolicyDocument:
-#          Version: '2012-10-17'
-#          Statement:
-#            - Effect: Allow
-#              Principal:
-#                Service:
-#                  - lambda.amazonaws.com
-#                  - edgelambda.amazonaws.com
-#              Action: sts:AssumeRole
-#        Policies:
-#          - PolicyName: myPolicyName
-#            PolicyDocument:
-#              Version: '2012-10-17'
-#              Statement:
-#                - Action:
-#                    - logs:CreateLogStream
-#                    - logs:CreateLogGroup
-#                    - logs:PutLogEvents
-#                  Resource:
-#                    - arn:aws:logs:*:*:log-group:/aws/lambda/*
-#                  Effect: Allow
-#                - Effect: Allow
-#                  Action:
-#                    - lambda:InvokeFunction
-#                  Resource:
-#                    - arn:aws:lambda:*:*:function:originResponse
-#                - Effect: Allow
-#                  Action:
-#                    - s3:PutObject
-#                    - s3:GetObject
-#                  Resource:
-#                    - arn:aws:s3:::demo-cf-image-resize/*
+#    lambdaAtEdge:
+#      distribution: 'ENSEIQTTLYA8C'
+#      eventType: 'viewer-request'
+#      pathPattern: 'photos/*.jpg'
