@@ -1,9 +1,9 @@
 import s3 from './s3'
-import { CloudFrontResponseHandler } from 'aws-lambda'
+import { CloudFrontResponseResult } from 'aws-lambda'
 import { extractUri, getBucketFromDomainName, resizeAndUpdateToS3 } from './lib'
 import pkg from '../package.json'
 
-export const originResponse: CloudFrontResponseHandler = async (event) => {
+export const originResponse = async (event): Promise<CloudFrontResponseResult> => {
   console.log(pkg.version)
   console.log(JSON.stringify(event, null, 2))
   const requestOrigin = event.Records[0].cf.request.origin
@@ -11,17 +11,20 @@ export const originResponse: CloudFrontResponseHandler = async (event) => {
   const response = event.Records[0].cf.response
 
   if (typeof requestOrigin.s3 === 'undefined') {
-    throw new Error(`Unexpected event.Records[0].cf.request.origin=${JSON.stringify(requestOrigin)}.`)
+    console.log(`Unexpected event.Records[0].cf.request.origin=${JSON.stringify(requestOrigin)}.`)
+    return response
   }
 
   const bucket = getBucketFromDomainName(requestOrigin.s3.domainName)
   if (!bucket) {
-    throw new Error(`No bucket from ${requestOrigin.s3.domainName}`)
+    console.log(`No bucket from ${requestOrigin.s3.domainName}`)
+    return response
   }
 
   if (!['403', '404'].includes(response.status)) {
     console.log('cf response status != [403, 404]')
-    return
+
+    return response
   }
 
   // /photos/image_800x700.jpg
@@ -44,12 +47,11 @@ export const originResponse: CloudFrontResponseHandler = async (event) => {
 
   console.log(base64Image)
 
-  return {
-    status: '200',
-    body: base64Image,
-    bodyEncoding: 'base64',
-    headers: {
-      'content-type': [{ key: 'Content-Type', value: 'image/jpeg' }]
-    }
-  }
+  response.status = '200'
+  response.body = base64Image
+  response.bodyEncoding = 'base64'
+  response.headers = response.headers || {}
+  response.headers['content-type'] = [{ key: 'Content-Type', value: 'image/jpeg' }]
+
+  return response
 }

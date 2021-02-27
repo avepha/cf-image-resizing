@@ -68,6 +68,7 @@ export function resizeAndUpdateToS3({ targetKey, objectStream, resizeOptions, bu
     s3.upload({
       Bucket: bucket,
       Key: targetKey,
+      ContentType: 'image/jpeg',
       Body: writeableStream
     }, (err) => {
       if(err) reject(err)
