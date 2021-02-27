@@ -19,7 +19,7 @@ export const cfResponse = {
           "uri": url
         },
         "response": {
-          "header": {},
+          "headers": {},
           "status": "403",
           "statusDescription": "Forbidden"
         }
